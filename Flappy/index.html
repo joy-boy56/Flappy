@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +32,7 @@
             border: 3px solid #4A4A4A;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .game-canvas {
@@ -58,7 +59,7 @@
             color: white;
             font-size: 24px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             pointer-events: none;
         }
 
@@ -69,17 +70,18 @@
             color: #FFD700;
             font-size: 18px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             pointer-events: none;
         }
 
-        .start-screen, .game-over-screen {
+        .start-screen,
+        .game-over-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -89,21 +91,24 @@
             pointer-events: auto;
         }
 
-        .start-screen h1, .game-over-screen h1 {
+        .start-screen h1,
+        .game-over-screen h1 {
             font-size: 48px;
             margin-bottom: 20px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
             color: #FFD700;
         }
 
-        .start-screen p, .game-over-screen p {
+        .start-screen p,
+        .game-over-screen p {
             font-size: 18px;
             margin-bottom: 30px;
             max-width: 300px;
             line-height: 1.4;
         }
 
-        .start-btn, .restart-btn {
+        .start-btn,
+        .restart-btn {
             padding: 15px 30px;
             font-size: 20px;
             background: #4CAF50;
@@ -112,13 +117,14 @@
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .start-btn:hover, .restart-btn:hover {
+        .start-btn:hover,
+        .restart-btn:hover {
             background: #45a049;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
         .controls {
@@ -126,7 +132,7 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
             text-align: center;
         }
@@ -144,16 +150,19 @@
                 border: none;
             }
 
-            .score, .high-score {
+            .score,
+            .high-score {
                 font-size: 20px;
                 top: 10px;
             }
 
-            .start-screen h1, .game-over-screen h1 {
+            .start-screen h1,
+            .game-over-screen h1 {
                 font-size: 36px;
             }
 
-            .start-screen p, .game-over-screen p {
+            .start-screen p,
+            .game-over-screen p {
                 font-size: 16px;
                 max-width: 250px;
             }
@@ -184,19 +193,25 @@
         }
 
         @keyframes float {
-            from { transform: translateX(-100px); }
-            to { transform: translateX(calc(100vw + 100px)); }
+            from {
+                transform: translateX(-100px);
+            }
+
+            to {
+                transform: translateX(calc(100vw + 100px));
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="game-container">
         <!-- Animated clouds -->
         <div class="cloud cloud1"></div>
         <div class="cloud cloud2"></div>
-        
+
         <canvas class="game-canvas" id="gameCanvas"></canvas>
-        
+
         <div class="ui-overlay">
             <div class="score">Score: <span id="currentScore">0</span></div>
             <div class="high-score">Best: <span id="highScore">0</span></div>
@@ -228,15 +243,15 @@
             sounds: {
                 // Sound mode: 'beep' (default) or 'custom'
                 mode: 'beep', // Change to 'custom' to use your own sound files
-                
+
                 // Custom sound file URLs (for 'custom' mode)
                 jumpSound: null,     // 'https://your-domain.com/jump.mp3'
                 scoreSound: null,    // 'https://your-domain.com/score.wav'
                 gameOverSound: null, // 'https://your-domain.com/gameover.ogg'
-                
+
                 // Sound volume (0.0 to 1.0)
                 volume: 0.3,
-                
+
                 // Beep sound frequencies (for 'beep' mode)
                 beepFrequencies: {
                     jump: 400,
@@ -244,15 +259,15 @@
                     gameOver: 200
                 }
             },
-            
+
             // Bird avatar settings
             bird: {
                 // Avatar mode: 'default', 'image', or 'auto'
                 mode: 'default', // Change this to 'image' or 'auto'
-                
+
                 // Single image URL (for 'image' mode)
                 imageUrl: null, // Replace with: 'https://your-image-url.com/bird.png'
-                
+
                 // Multiple avatars for auto-change (for 'auto' mode)
                 avatars: [
                     // Add your PNG URLs here:
@@ -260,32 +275,32 @@
                     // 'https://example.com/bird2.png',
                     // 'https://example.com/bird3.png'
                 ],
-                
+
                 // Auto-change settings
                 autoChange: {
                     enabled: false, // Set to true to enable auto avatar changing
                     interval: 3000 // Change avatar every 3 seconds (3000ms)
                 },
-                
+
                 // Default bird appearance
                 color: '#FFD700',
                 size: 20,
                 wingColor: '#FFA500'
             },
-            
+
             // Pipe appearance
             pipes: {
                 color: '#228B22',
                 width: 60,
                 gap: 150
             },
-            
+
             // Game physics
             physics: {
                 gravity: 0.4,
                 jumpForce: -8,
                 speed: 2,
-                
+
                 // Mobile-specific adjustments
                 mobile: {
                     gravity: 0.3,      // Slower gravity on mobile
@@ -306,13 +321,13 @@
         let frameCount = 0;
         let isMobile = false;
         let currentPhysics = {};
-        
+
         // Avatar management
         let birdImage = null;
         let loadedImages = [];
         let currentAvatarIndex = 0;
         let lastAvatarChange = 0;
-        
+
         // Audio management
         let audioContext = null;
         let sounds = {
@@ -325,29 +340,29 @@
         function initGame() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
-            
+
             // Load high score
             highScore = parseInt(localStorage.getItem('flappyBirdHighScore') || '0');
             document.getElementById('highScore').textContent = highScore;
-            
+
             // Set canvas size
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
-            
+
             // Initialize avatar system
             initAvatarSystem();
-            
+
             // Initialize audio system
             initAudioSystem();
-            
+
             // Event listeners
             canvas.addEventListener('click', handleInput);
             canvas.addEventListener('touchstart', handleInput);
             document.addEventListener('keydown', handleKeyInput);
-            
+
             // Initialize bird
             resetBird();
-            
+
             // Start game loop
             gameLoop();
         }
@@ -356,7 +371,7 @@
             const container = document.querySelector('.game-container');
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
-            
+
             // Re-detect mobile and adjust physics on resize
             detectMobile();
             setPhysics();
@@ -375,7 +390,7 @@
                         img.onerror = () => console.warn(`Failed to load avatar: ${url}`);
                         img.src = url;
                     });
-                    
+
                     if (GAME_CONFIG.bird.avatars[0]) {
                         loadBirdImage(GAME_CONFIG.bird.avatars[0]);
                     }
@@ -401,19 +416,19 @@
         }
 
         function updateAvatarRotation() {
-            if (GAME_CONFIG.bird.mode === 'auto' && 
-                GAME_CONFIG.bird.autoChange.enabled && 
+            if (GAME_CONFIG.bird.mode === 'auto' &&
+                GAME_CONFIG.bird.autoChange.enabled &&
                 GAME_CONFIG.bird.avatars.length > 1 &&
                 gameState === 'playing') {
-                
+
                 const currentTime = Date.now();
                 if (currentTime - lastAvatarChange > GAME_CONFIG.bird.autoChange.interval) {
                     currentAvatarIndex = (currentAvatarIndex + 1) % GAME_CONFIG.bird.avatars.length;
-                    
+
                     if (loadedImages[currentAvatarIndex]) {
                         birdImage = loadedImages[currentAvatarIndex];
                     }
-                    
+
                     lastAvatarChange = currentTime;
                 }
             }
@@ -426,7 +441,7 @@
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
-                
+
                 // Load custom sounds if in custom mode
                 if (GAME_CONFIG.sounds.mode === 'custom') {
                     loadCustomSounds();
@@ -444,14 +459,14 @@
                 sounds.jump.volume = GAME_CONFIG.sounds.volume;
                 sounds.jump.preload = 'auto';
             }
-            
+
             // Load score sound
             if (GAME_CONFIG.sounds.scoreSound) {
                 sounds.score = new Audio(GAME_CONFIG.sounds.scoreSound);
                 sounds.score.volume = GAME_CONFIG.sounds.volume;
                 sounds.score.preload = 'auto';
             }
-            
+
             // Load game over sound
             if (GAME_CONFIG.sounds.gameOverSound) {
                 sounds.gameOver = new Audio(GAME_CONFIG.sounds.gameOverSound);
@@ -464,13 +479,13 @@
             try {
                 const sound = sounds[soundType];
                 console.log(`Attempting to play ${soundType} sound:`, sound);
-                
+
                 if (sound) {
                     // Check if sound is ready to play
                     if (sound.readyState >= 2) { // HAVE_CURRENT_DATA or higher
                         sound.currentTime = 0;
                         const playPromise = sound.play();
-                        
+
                         if (playPromise !== undefined) {
                             playPromise
                                 .then(() => {
@@ -515,22 +530,22 @@
         function playBeepSound(frequency, duration, volume = 0.1) {
             try {
                 if (!audioContext) return;
-                
+
                 // Resume audio context if suspended
                 if (audioContext.state === 'suspended') {
                     audioContext.resume();
                 }
-                
+
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
-                
+
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-                
+
                 oscillator.frequency.value = frequency;
                 gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
+
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + duration);
             } catch (error) {
@@ -571,7 +586,7 @@
         function handleInput(e) {
             if (e) e.preventDefault();
             initAudioSystem();
-            
+
             if (gameState === 'playing') {
                 bird.velocity = GAME_CONFIG.physics.jumpForce;
                 playGameSound('jump');
@@ -610,15 +625,15 @@
 
         function updateGame() {
             if (gameState !== 'playing') return;
-            
+
             frameCount++;
             updateAvatarRotation();
-            
+
             // Update bird
             bird.velocity += GAME_CONFIG.physics.gravity;
             bird.y += bird.velocity;
             bird.rotation = Math.min(Math.max(bird.velocity * 3, -30), 90);
-            
+
             // Generate pipes
             if (frameCount % 90 === 0) {
                 const pipeHeight = Math.random() * (canvas.height - GAME_CONFIG.pipes.gap - 200) + 100;
@@ -629,12 +644,12 @@
                     scored: false
                 });
             }
-            
+
             // Update pipes
             for (let i = pipes.length - 1; i >= 0; i--) {
                 const pipe = pipes[i];
                 pipe.x -= GAME_CONFIG.physics.speed;
-                
+
                 // Score when bird passes pipe
                 if (!pipe.scored && bird.x > pipe.x + GAME_CONFIG.pipes.width) {
                     pipe.scored = true;
@@ -642,13 +657,13 @@
                     document.getElementById('currentScore').textContent = score;
                     playGameSound('score');
                 }
-                
+
                 // Remove off-screen pipes
                 if (pipe.x + GAME_CONFIG.pipes.width < 0) {
                     pipes.splice(i, 1);
                 }
             }
-            
+
             // Collision detection
             checkCollisions();
         }
@@ -659,12 +674,12 @@
                 gameOver();
                 return;
             }
-            
+
             // Pipe collision
             for (const pipe of pipes) {
-                if (bird.x + GAME_CONFIG.bird.size > pipe.x && 
+                if (bird.x + GAME_CONFIG.bird.size > pipe.x &&
                     bird.x - GAME_CONFIG.bird.size < pipe.x + GAME_CONFIG.pipes.width) {
-                    if (bird.y - GAME_CONFIG.bird.size < pipe.topHeight || 
+                    if (bird.y - GAME_CONFIG.bird.size < pipe.topHeight ||
                         bird.y + GAME_CONFIG.bird.size > pipe.bottomY) {
                         gameOver();
                         break;
@@ -676,7 +691,7 @@
         function gameOver() {
             gameState = 'gameOver';
             playGameSound('gameOver');
-            
+
             // Check for high score
             const isNewHighScore = score > highScore;
             if (isNewHighScore) {
@@ -687,7 +702,7 @@
             } else {
                 document.getElementById('newHighScore').classList.add('hidden');
             }
-            
+
             document.getElementById('finalScore').textContent = score;
             document.getElementById('gameOverScreen').classList.remove('hidden');
         }
@@ -695,11 +710,11 @@
         function drawGame() {
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // Draw ground
             ctx.fillStyle = '#DEB887';
             ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-            
+
             // Draw pipes
             ctx.fillStyle = GAME_CONFIG.pipes.color;
             for (const pipe of pipes) {
@@ -707,39 +722,39 @@
                 ctx.fillRect(pipe.x, 0, GAME_CONFIG.pipes.width, pipe.topHeight);
                 // Bottom pipe
                 ctx.fillRect(pipe.x, pipe.bottomY, GAME_CONFIG.pipes.width, canvas.height - pipe.bottomY);
-                
+
                 // Pipe caps
                 ctx.fillStyle = '#1F5F1F';
                 ctx.fillRect(pipe.x - 5, pipe.topHeight - 30, GAME_CONFIG.pipes.width + 10, 30);
                 ctx.fillRect(pipe.x - 5, pipe.bottomY, GAME_CONFIG.pipes.width + 10, 30);
                 ctx.fillStyle = GAME_CONFIG.pipes.color;
             }
-            
+
             // Draw bird
             ctx.save();
             ctx.translate(bird.x, bird.y);
             ctx.rotate(bird.rotation * Math.PI / 180);
-            
+
             if (birdImage && (GAME_CONFIG.bird.mode === 'image' || GAME_CONFIG.bird.mode === 'auto')) {
                 // Draw custom PNG image
                 const size = GAME_CONFIG.bird.size * 2;
-                ctx.drawImage(birdImage, -size/2, -size/2, size, size);
+                ctx.drawImage(birdImage, -size / 2, -size / 2, size, size);
             } else {
                 // Draw default bird
                 const size = GAME_CONFIG.bird.size;
-                
+
                 // Bird body
                 ctx.fillStyle = GAME_CONFIG.bird.color;
                 ctx.beginPath();
                 ctx.arc(0, 0, size, 0, Math.PI * 2);
                 ctx.fill();
-                
+
                 // Bird wing
                 ctx.fillStyle = GAME_CONFIG.bird.wingColor;
                 ctx.beginPath();
                 ctx.arc(-5, -5, size * 0.7, 0, Math.PI * 2);
                 ctx.fill();
-                
+
                 // Bird eye
                 ctx.fillStyle = 'white';
                 ctx.beginPath();
@@ -749,7 +764,7 @@
                 ctx.beginPath();
                 ctx.arc(7, -5, 3, 0, Math.PI * 2);
                 ctx.fill();
-                
+
                 // Bird beak
                 ctx.fillStyle = '#FFA500';
                 ctx.beginPath();
@@ -759,7 +774,7 @@
                 ctx.closePath();
                 ctx.fill();
             }
-            
+
             ctx.restore();
         }
 
@@ -773,4 +788,5 @@
         window.addEventListener('load', initGame);
     </script>
 </body>
+
 </html>
