@@ -232,16 +232,16 @@
             },
             pipes: {
                 color: '#228B22',
-                width: 70, // Slightly wider for better visibility
-                gap: 180   // Increased gap for mobile playability
+                width: 70, 
+                gap: 200   // Even larger gap for easier mobile gameplay
             },
             physics: {
-                gravity: 0.3,      // Reduced gravity for more forgiving gameplay
-                jumpForce: -6.5,   // Adjusted jump force to match gravity
-                speed: 1.8,        // Slightly slower for mobile precision
-                pipeSpacing: 250,  // More spacing between pipes
-                minRotation: -0.4, // More subtle rotation
-                maxRotation: 0.8
+                gravity: 0.22,     // Much slower gravity for mobile
+                jumpForce: -5.2,   // Gentler jump force
+                speed: 1.2,        // Much slower pipe movement
+                pipeSpacing: 300,  // Even more spacing between pipes
+                minRotation: -0.3, // More subtle rotation
+                maxRotation: 0.6   
             }
         };
 
@@ -280,10 +280,10 @@
 
         function loadAvatars() {
             birdImage = new Image();
-            birdImage.onload = function () {
+            birdImage.onload = function() {
                 console.log('Bird image loaded successfully');
             };
-            birdImage.onerror = function () {
+            birdImage.onerror = function() {
                 console.log('Failed to load bird image, using fallback');
                 // Create a simple colored circle as fallback
                 const canvas = document.createElement('canvas');
@@ -307,10 +307,10 @@
             if (GAME_CONFIG.bird.autoChange.enabled && now - lastAvatarChange > GAME_CONFIG.bird.autoChange.interval) {
                 currentAvatarIndex = (currentAvatarIndex + 1) % GAME_CONFIG.bird.avatars.length;
                 const newImage = new Image();
-                newImage.onload = function () {
+                newImage.onload = function() {
                     birdImage = newImage;
                 };
-                newImage.onerror = function () {
+                newImage.onerror = function() {
                     // Keep current image if new one fails to load
                     console.log('Failed to load new avatar, keeping current');
                 };
@@ -361,7 +361,7 @@
                 e.preventDefault();
                 e.stopPropagation();
             }
-
+            
             if (gameState === 'playing') {
                 bird.velocity = GAME_CONFIG.physics.jumpForce;
                 bird.rotation = GAME_CONFIG.physics.minRotation;
@@ -377,9 +377,9 @@
             bird.velocity += GAME_CONFIG.physics.gravity;
             bird.y += bird.velocity;
 
-            // Smoother rotation transitions
+            // Smoother rotation transitions - much slower
             const targetRotation = bird.velocity > 0 ? GAME_CONFIG.physics.maxRotation : GAME_CONFIG.physics.minRotation;
-            bird.rotation += (targetRotation - bird.rotation) * 0.15;
+            bird.rotation += (targetRotation - bird.rotation) * 0.08; // Slower rotation change
 
             // Generate pipes with better spacing
             const pipeSpacing = GAME_CONFIG.physics.pipeSpacing;
@@ -401,10 +401,10 @@
                     playSound('score');
                 }
             });
-
+            
             // Remove off-screen pipes
             pipes = pipes.filter(p => p.x + GAME_CONFIG.pipes.width + 50 > 0);
-
+            
             checkCollisions();
         }
 
@@ -466,7 +466,7 @@
             gradient.addColorStop(1, '#CD853F');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
-
+            
             // Add ground line detail
             ctx.strokeStyle = '#8B7355';
             ctx.lineWidth = 2;
@@ -482,9 +482,9 @@
                 pipeGradient.addColorStop(0, '#32CD32');
                 pipeGradient.addColorStop(0.5, GAME_CONFIG.pipes.color);
                 pipeGradient.addColorStop(1, '#006400');
-
+                
                 ctx.fillStyle = pipeGradient;
-
+                
                 // Top pipe
                 ctx.fillRect(pipe.x, 0, GAME_CONFIG.pipes.width, pipe.topHeight);
                 // Bottom pipe
@@ -495,7 +495,7 @@
                 capGradient.addColorStop(0, '#228B22');
                 capGradient.addColorStop(0.5, '#145214');
                 capGradient.addColorStop(1, '#0F3D0F');
-
+                
                 ctx.fillStyle = capGradient;
                 ctx.fillRect(pipe.x - 8, pipe.topHeight - 25, GAME_CONFIG.pipes.width + 16, 25);
                 ctx.fillRect(pipe.x - 8, pipe.bottomY, GAME_CONFIG.pipes.width + 16, 25);
@@ -507,11 +507,11 @@
             ctx.rotate(bird.rotation);
 
             const size = GAME_CONFIG.bird.size * 2.2;
-
+            
             // Add subtle glow effect
             ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
             ctx.shadowBlur = 8;
-
+            
             // Check if image is loaded and valid
             if (birdImage && birdImage.complete && birdImage.naturalWidth > 0) {
                 ctx.drawImage(birdImage, -size / 2, -size / 2, size, size);
@@ -519,13 +519,13 @@
                 // Fallback: draw a simple colored bird shape
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
-                ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+                ctx.arc(0, 0, size/2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = '#FFA500';
                 ctx.lineWidth = 3;
                 ctx.stroke();
             }
-
+            
             ctx.restore();
         }
 
