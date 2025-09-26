@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird Game</title>
+    <title>Flappy A10 Game</title>
     <style>
         * {
             margin: 0;
@@ -141,33 +141,6 @@
             display: none !important;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .game-container {
-                width: 100vw;
-                height: 100vh;
-                border-radius: 0;
-                border: none;
-            }
-
-            .score,
-            .high-score {
-                font-size: 20px;
-                top: 10px;
-            }
-
-            .start-screen h1,
-            .game-over-screen h1 {
-                font-size: 36px;
-            }
-
-            .start-screen p,
-            .game-over-screen p {
-                font-size: 16px;
-                max-width: 250px;
-            }
-        }
-
         /* Cloud animations */
         .cloud {
             position: absolute;
@@ -201,12 +174,16 @@
                 transform: translateX(calc(100vw + 100px));
             }
         }
+
+        .a10 {
+            width: 120px;
+            height: auto;
+        }
     </style>
 </head>
 
 <body>
     <div class="game-container">
-        <!-- Animated clouds -->
         <div class="cloud cloud1"></div>
         <div class="cloud cloud2"></div>
 
@@ -217,19 +194,19 @@
             <div class="high-score">Best: <span id="highScore">0</span></div>
         </div>
 
-        <!-- Start Screen -->
         <div class="start-screen" id="startScreen">
-            <h1>🐦 Flappy Bird</h1>
-            <p>Tap or click to make the bird fly and avoid the pipes!</p>
+            <img class="a10" src="intro.png" />
+            <h1> Flappy A10</h1>
+            <p>Tap or click to make the ettan fly and avoid the pipes!</p>
             <button class="start-btn" onclick="startGame()">Start Game</button>
             <div class="controls">
                 <p>Click, tap, or press SPACE to fly</p>
             </div>
         </div>
 
-        <!-- Game Over Screen -->
         <div class="game-over-screen hidden" id="gameOverScreen">
-            <h1>Game Over!</h1>
+            <img class="a10" src="outro.png" />
+            <h1>ശുഭദിനം🌹</h1>
             <p>Your Score: <span id="finalScore">0</span></p>
             <p id="newHighScore" class="hidden" style="color: #FFD700;">🏆 New High Score!</p>
             <button class="restart-btn" onclick="restartGame()">Play Again</button>
@@ -237,542 +214,316 @@
     </div>
 
     <script>
-        // ===== CUSTOMIZABLE SETTINGS =====
+
+        // ===== MOBILE-OPTIMIZED GAME CONFIG =====
         const GAME_CONFIG = {
-            // Sound settings
             sounds: {
-                // Sound mode: 'beep' (default) or 'custom'
-                mode: 'beep', // Change to 'custom' to use your own sound files
-
-                // Custom sound file URLs (for 'custom' mode)
-                jumpSound: null,     // 'https://your-domain.com/jump.mp3'
-                scoreSound: null,    // 'https://your-domain.com/score.wav'
-                gameOverSound: null, // 'https://your-domain.com/gameover.ogg'
-
-                // Sound volume (0.0 to 1.0)
-                volume: 0.3,
-
-                // Beep sound frequencies (for 'beep' mode)
-                beepFrequencies: {
-                    jump: 400,
-                    score: 800,
-                    gameOver: 200
-                }
+                mode: 'custom',
+                jumpSound: 'adoli.mp3',
+                scoreSound: 'score.mp3',
+                gameOverSound: 'sceneilla.mp3',
+                volume: 0.4
             },
-
-            // Bird avatar settings
             bird: {
-                // Avatar mode: 'default', 'image', or 'auto'
-                mode: 'default', // Change this to 'image' or 'auto'
-
-                // Single image URL (for 'image' mode)
-                imageUrl: null, // Replace with: 'https://your-image-url.com/bird.png'
-
-                // Multiple avatars for auto-change (for 'auto' mode)
-                avatars: [
-                    // Add your PNG URLs here:
-                    // 'https://example.com/bird1.png',
-                    // 'https://example.com/bird2.png',
-                    // 'https://example.com/bird3.png'
-                ],
-
-                // Auto-change settings
-                autoChange: {
-                    enabled: false, // Set to true to enable auto avatar changing
-                    interval: 3000 // Change avatar every 3 seconds (3000ms)
-                },
-
-                // Default bird appearance
-                color: '#FFD700',
-                size: 20,
-                wingColor: '#FFA500'
+                mode: 'auto',
+                avatars: ['intro.png', 'outro.png', 'intro.png', 'outro.png'],
+                autoChange: { enabled: true, interval: 2000 },
+                size: 25 // Increased for better visibility on mobile
             },
-
-            // Pipe appearance
             pipes: {
                 color: '#228B22',
-                width: 60,
-                gap: 150
+                width: 70, // Slightly wider for better visibility
+                gap: 180   // Increased gap for mobile playability
             },
-
-            // Game physics
             physics: {
-                gravity: 0.4,
-                jumpForce: -8,
-                speed: 2,
-
-                // Mobile-specific adjustments
-                mobile: {
-                    gravity: 0.3,      // Slower gravity on mobile
-                    jumpForce: -7,     // Slightly weaker jump
-                    speed: 1.5,        // Slower game speed
-                    pipeGap: 180       // Larger pipe gap for easier gameplay
-                }
+                gravity: 0.3,      // Reduced gravity for more forgiving gameplay
+                jumpForce: -6.5,   // Adjusted jump force to match gravity
+                speed: 1.8,        // Slightly slower for mobile precision
+                pipeSpacing: 250,  // More spacing between pipes
+                minRotation: -0.4, // More subtle rotation
+                maxRotation: 0.8
             }
         };
 
-        // Game variables
-        let canvas, ctx;
-        let gameState = 'start';
-        let bird = {};
-        let pipes = [];
-        let score = 0;
-        let highScore = 0;
-        let frameCount = 0;
-        let isMobile = false;
-        let currentPhysics = {};
+        let canvas, ctx, bird, pipes, score, highScore, gameState, birdImage;
+        let currentAvatarIndex = 0, lastAvatarChange = 0;
+        let sounds = {};
 
-        // Avatar management
-        let birdImage = null;
-        let loadedImages = [];
-        let currentAvatarIndex = 0;
-        let lastAvatarChange = 0;
-
-        // Audio management
-        let audioContext = null;
-        let sounds = {
-            jump: null,
-            score: null,
-            gameOver: null
-        };
-
-        // Initialize game
         function initGame() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
-
-            // Load high score
-            highScore = parseInt(localStorage.getItem('flappyBirdHighScore') || '0');
-            document.getElementById('highScore').textContent = highScore;
-
-            // Set canvas size
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
 
-            // Initialize avatar system
-            initAvatarSystem();
+            highScore = parseInt(localStorage.getItem('flappyBirdHighScore') || '0');
+            document.getElementById('highScore').textContent = highScore;
 
-            // Initialize audio system
-            initAudioSystem();
+            loadSounds();
+            loadAvatars();
 
-            // Event listeners
+            // Enhanced mobile touch handling
             canvas.addEventListener('click', handleInput);
             canvas.addEventListener('touchstart', handleInput);
-            document.addEventListener('keydown', handleKeyInput);
+            canvas.addEventListener('touchend', (e) => e.preventDefault());
+            document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); handleInput(); } });
 
-            // Initialize bird
-            resetBird();
-
-            // Start game loop
+            resetGame();
+            gameState = 'start';
             gameLoop();
         }
 
         function resizeCanvas() {
-            const container = document.querySelector('.game-container');
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-
-            // Re-detect mobile and adjust physics on resize
-            detectMobile();
-            setPhysics();
+            const c = document.querySelector('.game-container');
+            canvas.width = c.clientWidth;
+            canvas.height = c.clientHeight;
         }
 
-        // Avatar system
-        function initAvatarSystem() {
-            try {
-                if (GAME_CONFIG.bird.mode === 'image' && GAME_CONFIG.bird.imageUrl) {
-                    loadBirdImage(GAME_CONFIG.bird.imageUrl);
-                } else if (GAME_CONFIG.bird.mode === 'auto' && GAME_CONFIG.bird.avatars.length > 0) {
-                    // Preload all avatar images
-                    GAME_CONFIG.bird.avatars.forEach((url, index) => {
-                        const img = new Image();
-                        img.onload = () => loadedImages[index] = img;
-                        img.onerror = () => console.warn(`Failed to load avatar: ${url}`);
-                        img.src = url;
-                    });
-
-                    if (GAME_CONFIG.bird.avatars[0]) {
-                        loadBirdImage(GAME_CONFIG.bird.avatars[0]);
-                    }
-                }
-            } catch (error) {
-                console.warn('Avatar system initialization failed:', error);
-            }
-        }
-
-        function loadBirdImage(url) {
-            try {
-                const img = new Image();
-                img.onload = () => birdImage = img;
-                img.onerror = () => {
-                    console.warn(`Failed to load bird image: ${url}`);
-                    birdImage = null;
-                };
-                img.src = url;
-            } catch (error) {
-                console.warn('Image loading failed:', error);
-                birdImage = null;
-            }
-        }
-
-        function updateAvatarRotation() {
-            if (GAME_CONFIG.bird.mode === 'auto' &&
-                GAME_CONFIG.bird.autoChange.enabled &&
-                GAME_CONFIG.bird.avatars.length > 1 &&
-                gameState === 'playing') {
-
-                const currentTime = Date.now();
-                if (currentTime - lastAvatarChange > GAME_CONFIG.bird.autoChange.interval) {
-                    currentAvatarIndex = (currentAvatarIndex + 1) % GAME_CONFIG.bird.avatars.length;
-
-                    if (loadedImages[currentAvatarIndex]) {
-                        birdImage = loadedImages[currentAvatarIndex];
-                    }
-
-                    lastAvatarChange = currentTime;
-                }
-            }
-        }
-
-        // Audio system
-        function initAudioSystem() {
-            try {
-                // Initialize Web Audio Context
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-
-                // Load custom sounds if in custom mode
-                if (GAME_CONFIG.sounds.mode === 'custom') {
-                    loadCustomSounds();
-                }
-            } catch (error) {
-                console.warn('Audio system initialization failed:', error);
-                audioContext = null;
-            }
-        }
-
-        function loadCustomSounds() {
-            // Load jump sound
-            if (GAME_CONFIG.sounds.jumpSound) {
-                sounds.jump = new Audio(GAME_CONFIG.sounds.jumpSound);
-                sounds.jump.volume = GAME_CONFIG.sounds.volume;
-                sounds.jump.preload = 'auto';
-            }
-
-            // Load score sound
-            if (GAME_CONFIG.sounds.scoreSound) {
-                sounds.score = new Audio(GAME_CONFIG.sounds.scoreSound);
-                sounds.score.volume = GAME_CONFIG.sounds.volume;
-                sounds.score.preload = 'auto';
-            }
-
-            // Load game over sound
-            if (GAME_CONFIG.sounds.gameOverSound) {
-                sounds.gameOver = new Audio(GAME_CONFIG.sounds.gameOverSound);
-                sounds.gameOver.volume = GAME_CONFIG.sounds.volume;
-                sounds.gameOver.preload = 'auto';
-            }
-        }
-
-        function playCustomSound(soundType) {
-            try {
-                const sound = sounds[soundType];
-                console.log(`Attempting to play ${soundType} sound:`, sound);
-
-                if (sound) {
-                    // Check if sound is ready to play
-                    if (sound.readyState >= 2) { // HAVE_CURRENT_DATA or higher
-                        sound.currentTime = 0;
-                        const playPromise = sound.play();
-
-                        if (playPromise !== undefined) {
-                            playPromise
-                                .then(() => {
-                                    console.log(`${soundType} sound played successfully`);
-                                })
-                                .catch(error => {
-                                    console.warn(`Could not play ${soundType} sound:`, error);
-                                    // Fallback to beep sound
-                                    playFallbackSound(soundType);
-                                });
-                        }
-                    } else {
-                        console.warn(`${soundType} sound not ready, using fallback`);
-                        playFallbackSound(soundType);
-                    }
-                } else {
-                    console.warn(`${soundType} sound not loaded, using fallback`);
-                    playFallbackSound(soundType);
-                }
-            } catch (error) {
-                console.warn(`Error playing ${soundType} sound:`, error);
-                playFallbackSound(soundType);
-            }
-        }
-
-        function playFallbackSound(soundType) {
-            // Fallback to beep sounds if custom sounds fail
-            const frequencies = GAME_CONFIG.sounds.beepFrequencies;
-            switch (soundType) {
-                case 'jump':
-                    playBeepSound(frequencies.jump, 0.1);
-                    break;
-                case 'score':
-                    playBeepSound(frequencies.score, 0.2);
-                    break;
-                case 'gameOver':
-                    playBeepSound(frequencies.gameOver, 0.5);
-                    break;
-            }
-        }
-
-        function playBeepSound(frequency, duration, volume = 0.1) {
-            try {
-                if (!audioContext) return;
-
-                // Resume audio context if suspended
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
-
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.frequency.value = frequency;
-                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (error) {
-                // Silently fail if audio doesn't work
-            }
-        }
-
-        function playGameSound(soundType) {
-            if (GAME_CONFIG.sounds.mode === 'custom') {
-                playCustomSound(soundType);
-            } else {
-                // Use beep sounds
-                const frequencies = GAME_CONFIG.sounds.beepFrequencies;
-                switch (soundType) {
-                    case 'jump':
-                        playBeepSound(frequencies.jump, 0.1);
-                        break;
-                    case 'score':
-                        playBeepSound(frequencies.score, 0.2);
-                        break;
-                    case 'gameOver':
-                        playBeepSound(frequencies.gameOver, 0.5);
-                        break;
-                }
-            }
-        }
-
-        // Game functions
-        function resetBird() {
-            bird = {
-                x: canvas.width / 4,
-                y: canvas.height / 2,
-                velocity: 0,
-                rotation: 0
+        function loadAvatars() {
+            birdImage = new Image();
+            birdImage.onload = function () {
+                console.log('Bird image loaded successfully');
             };
+            birdImage.onerror = function () {
+                console.log('Failed to load bird image, using fallback');
+                // Create a simple colored circle as fallback
+                const canvas = document.createElement('canvas');
+                canvas.width = 50;
+                canvas.height = 50;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(25, 25, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#FFA500';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                birdImage.src = canvas.toDataURL();
+            };
+            birdImage.src = GAME_CONFIG.bird.avatars[0];
         }
 
-        function handleInput(e) {
-            if (e) e.preventDefault();
-            initAudioSystem();
-
-            if (gameState === 'playing') {
-                bird.velocity = GAME_CONFIG.physics.jumpForce;
-                playGameSound('jump');
+        function switchAvatar() {
+            const now = Date.now();
+            if (GAME_CONFIG.bird.autoChange.enabled && now - lastAvatarChange > GAME_CONFIG.bird.autoChange.interval) {
+                currentAvatarIndex = (currentAvatarIndex + 1) % GAME_CONFIG.bird.avatars.length;
+                const newImage = new Image();
+                newImage.onload = function () {
+                    birdImage = newImage;
+                };
+                newImage.onerror = function () {
+                    // Keep current image if new one fails to load
+                    console.log('Failed to load new avatar, keeping current');
+                };
+                newImage.src = GAME_CONFIG.bird.avatars[currentAvatarIndex];
+                lastAvatarChange = now;
             }
         }
 
-        function handleKeyInput(e) {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                handleInput();
+        function loadSounds() {
+            sounds.jump = new Audio(GAME_CONFIG.sounds.jumpSound);
+            sounds.score = new Audio(GAME_CONFIG.sounds.scoreSound);
+            sounds.gameOver = new Audio(GAME_CONFIG.sounds.gameOverSound);
+            for (let s in sounds) sounds[s].volume = GAME_CONFIG.sounds.volume;
+        }
+
+        function playSound(type) {
+            if (sounds[type]) {
+                sounds[type].currentTime = 0;
+                sounds[type].play().catch(() => { });
             }
         }
 
-        function startGame() {
-            initAudioSystem();
-            gameState = 'playing';
-            document.getElementById('startScreen').classList.add('hidden');
-            resetGame();
+        function resetBird() {
+            bird = { x: canvas.width / 4, y: canvas.height / 2, velocity: 0, rotation: 0 };
         }
 
         function resetGame() {
             score = 0;
             pipes = [];
-            frameCount = 0;
-            currentAvatarIndex = 0;
-            lastAvatarChange = Date.now();
             resetBird();
             document.getElementById('currentScore').textContent = score;
         }
 
-        function restartGame() {
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            resetGame();
             gameState = 'playing';
+        }
+
+        function restartGame() {
             document.getElementById('gameOverScreen').classList.add('hidden');
             resetGame();
+            gameState = 'playing';
+        }
+
+        function handleInput(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            if (gameState === 'playing') {
+                bird.velocity = GAME_CONFIG.physics.jumpForce;
+                bird.rotation = GAME_CONFIG.physics.minRotation;
+                playSound('jump');
+            }
         }
 
         function updateGame() {
             if (gameState !== 'playing') return;
+            switchAvatar();
 
-            frameCount++;
-            updateAvatarRotation();
-
-            // Update bird
+            // Smoother bird physics for mobile
             bird.velocity += GAME_CONFIG.physics.gravity;
             bird.y += bird.velocity;
-            bird.rotation = Math.min(Math.max(bird.velocity * 3, -30), 90);
 
-            // Generate pipes
-            if (frameCount % 90 === 0) {
-                const pipeHeight = Math.random() * (canvas.height - GAME_CONFIG.pipes.gap - 200) + 100;
-                pipes.push({
-                    x: canvas.width,
-                    topHeight: pipeHeight,
-                    bottomY: pipeHeight + GAME_CONFIG.pipes.gap,
-                    scored: false
-                });
+            // Smoother rotation transitions
+            const targetRotation = bird.velocity > 0 ? GAME_CONFIG.physics.maxRotation : GAME_CONFIG.physics.minRotation;
+            bird.rotation += (targetRotation - bird.rotation) * 0.15;
+
+            // Generate pipes with better spacing
+            const pipeSpacing = GAME_CONFIG.physics.pipeSpacing;
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - pipeSpacing) {
+                const minTop = 80;  // Safe top margin
+                const maxTop = canvas.height - GAME_CONFIG.pipes.gap - 120; // Safe bottom margin
+                const topHeight = Math.random() * (maxTop - minTop) + minTop;
+
+                pipes.push({ x: canvas.width, topHeight, bottomY: topHeight + GAME_CONFIG.pipes.gap, scored: false });
             }
 
-            // Update pipes
-            for (let i = pipes.length - 1; i >= 0; i--) {
-                const pipe = pipes[i];
+            // Move and score pipes
+            pipes.forEach(pipe => {
                 pipe.x -= GAME_CONFIG.physics.speed;
-
-                // Score when bird passes pipe
                 if (!pipe.scored && bird.x > pipe.x + GAME_CONFIG.pipes.width) {
-                    pipe.scored = true;
                     score++;
+                    pipe.scored = true;
                     document.getElementById('currentScore').textContent = score;
-                    playGameSound('score');
+                    playSound('score');
                 }
+            });
 
-                // Remove off-screen pipes
-                if (pipe.x + GAME_CONFIG.pipes.width < 0) {
-                    pipes.splice(i, 1);
-                }
-            }
+            // Remove off-screen pipes
+            pipes = pipes.filter(p => p.x + GAME_CONFIG.pipes.width + 50 > 0);
 
-            // Collision detection
             checkCollisions();
         }
 
         function checkCollisions() {
+            const birdRadius = GAME_CONFIG.bird.size;
+            const groundHeight = 60;
+
             // Ground and ceiling collision
-            if (bird.y + GAME_CONFIG.bird.size > canvas.height - 50 || bird.y - GAME_CONFIG.bird.size < 0) {
-                gameOver();
-                return;
+            if (bird.y + birdRadius > canvas.height - groundHeight || bird.y - birdRadius < 0) {
+                return gameOver();
             }
 
-            // Pipe collision
-            for (const pipe of pipes) {
-                if (bird.x + GAME_CONFIG.bird.size > pipe.x &&
-                    bird.x - GAME_CONFIG.bird.size < pipe.x + GAME_CONFIG.pipes.width) {
-                    if (bird.y - GAME_CONFIG.bird.size < pipe.topHeight ||
-                        bird.y + GAME_CONFIG.bird.size > pipe.bottomY) {
-                        gameOver();
-                        break;
+            // Fixed pipe collision detection
+            for (const p of pipes) {
+                // Only check pipes that are close to the bird
+                if (p.x + GAME_CONFIG.pipes.width < bird.x - birdRadius || p.x > bird.x + birdRadius) {
+                    continue; // Skip pipes that are too far away
+                }
+
+                const pipeLeft = p.x;
+                const pipeRight = p.x + GAME_CONFIG.pipes.width;
+                const pipeTop = p.topHeight;
+                const pipeBottom = p.bottomY;
+
+                // Check if bird is horizontally within pipe bounds
+                if (bird.x + birdRadius > pipeLeft && bird.x - birdRadius < pipeRight) {
+                    // Check if bird is vertically hitting the pipes (not in the gap)
+                    if (bird.y - birdRadius < pipeTop || bird.y + birdRadius > pipeBottom) {
+                        return gameOver();
                     }
                 }
             }
         }
 
         function gameOver() {
+            if (gameState === 'gameOver') return;
             gameState = 'gameOver';
-            playGameSound('gameOver');
-
-            // Check for high score
-            const isNewHighScore = score > highScore;
-            if (isNewHighScore) {
+            playSound('gameOver');
+            const isHigh = score > highScore;
+            if (isHigh) {
                 highScore = score;
-                localStorage.setItem('flappyBirdHighScore', highScore.toString());
-                document.getElementById('highScore').textContent = highScore;
+                localStorage.setItem('flappyBirdHighScore', highScore);
                 document.getElementById('newHighScore').classList.remove('hidden');
             } else {
                 document.getElementById('newHighScore').classList.add('hidden');
             }
-
             document.getElementById('finalScore').textContent = score;
+            document.getElementById('highScore').textContent = highScore;
             document.getElementById('gameOverScreen').classList.remove('hidden');
         }
 
         function drawGame() {
-            // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw ground
-            ctx.fillStyle = '#DEB887';
-            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            // Draw enhanced ground with texture
+            const groundHeight = 60;
+            const gradient = ctx.createLinearGradient(0, canvas.height - groundHeight, 0, canvas.height);
+            gradient.addColorStop(0, '#DEB887');
+            gradient.addColorStop(1, '#CD853F');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
-            // Draw pipes
-            ctx.fillStyle = GAME_CONFIG.pipes.color;
-            for (const pipe of pipes) {
+            // Add ground line detail
+            ctx.strokeStyle = '#8B7355';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - groundHeight);
+            ctx.lineTo(canvas.width, canvas.height - groundHeight);
+            ctx.stroke();
+
+            // Draw enhanced pipes with gradients
+            pipes.forEach(pipe => {
+                // Main pipe body gradient
+                const pipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + GAME_CONFIG.pipes.width, 0);
+                pipeGradient.addColorStop(0, '#32CD32');
+                pipeGradient.addColorStop(0.5, GAME_CONFIG.pipes.color);
+                pipeGradient.addColorStop(1, '#006400');
+
+                ctx.fillStyle = pipeGradient;
+
                 // Top pipe
                 ctx.fillRect(pipe.x, 0, GAME_CONFIG.pipes.width, pipe.topHeight);
                 // Bottom pipe
-                ctx.fillRect(pipe.x, pipe.bottomY, GAME_CONFIG.pipes.width, canvas.height - pipe.bottomY);
+                ctx.fillRect(pipe.x, pipe.bottomY, GAME_CONFIG.pipes.width, canvas.height - pipe.bottomY - groundHeight);
 
-                // Pipe caps
-                ctx.fillStyle = '#1F5F1F';
-                ctx.fillRect(pipe.x - 5, pipe.topHeight - 30, GAME_CONFIG.pipes.width + 10, 30);
-                ctx.fillRect(pipe.x - 5, pipe.bottomY, GAME_CONFIG.pipes.width + 10, 30);
-                ctx.fillStyle = GAME_CONFIG.pipes.color;
-            }
+                // Enhanced pipe caps with gradient
+                const capGradient = ctx.createLinearGradient(pipe.x - 8, 0, pipe.x + GAME_CONFIG.pipes.width + 8, 0);
+                capGradient.addColorStop(0, '#228B22');
+                capGradient.addColorStop(0.5, '#145214');
+                capGradient.addColorStop(1, '#0F3D0F');
 
-            // Draw bird
+                ctx.fillStyle = capGradient;
+                ctx.fillRect(pipe.x - 8, pipe.topHeight - 25, GAME_CONFIG.pipes.width + 16, 25);
+                ctx.fillRect(pipe.x - 8, pipe.bottomY, GAME_CONFIG.pipes.width + 16, 25);
+            });
+
+            // Draw bird with enhanced visual effects
             ctx.save();
             ctx.translate(bird.x, bird.y);
-            ctx.rotate(bird.rotation * Math.PI / 180);
+            ctx.rotate(bird.rotation);
 
-            if (birdImage && (GAME_CONFIG.bird.mode === 'image' || GAME_CONFIG.bird.mode === 'auto')) {
-                // Draw custom PNG image
-                const size = GAME_CONFIG.bird.size * 2;
+            const size = GAME_CONFIG.bird.size * 2.2;
+
+            // Add subtle glow effect
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+            ctx.shadowBlur = 8;
+
+            // Check if image is loaded and valid
+            if (birdImage && birdImage.complete && birdImage.naturalWidth > 0) {
                 ctx.drawImage(birdImage, -size / 2, -size / 2, size, size);
             } else {
-                // Draw default bird
-                const size = GAME_CONFIG.bird.size;
-
-                // Bird body
-                ctx.fillStyle = GAME_CONFIG.bird.color;
+                // Fallback: draw a simple colored bird shape
+                ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
-                ctx.arc(0, 0, size, 0, Math.PI * 2);
+                ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
                 ctx.fill();
-
-                // Bird wing
-                ctx.fillStyle = GAME_CONFIG.bird.wingColor;
-                ctx.beginPath();
-                ctx.arc(-5, -5, size * 0.7, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Bird eye
-                ctx.fillStyle = 'white';
-                ctx.beginPath();
-                ctx.arc(5, -5, 6, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = 'black';
-                ctx.beginPath();
-                ctx.arc(7, -5, 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Bird beak
-                ctx.fillStyle = '#FFA500';
-                ctx.beginPath();
-                ctx.moveTo(15, 0);
-                ctx.lineTo(25, -3);
-                ctx.lineTo(25, 3);
-                ctx.closePath();
-                ctx.fill();
+                ctx.strokeStyle = '#FFA500';
+                ctx.lineWidth = 3;
+                ctx.stroke();
             }
 
             ctx.restore();
@@ -784,7 +535,11 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Initialize when page loads
+        // Prevent scroll and zoom on mobile
+        document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('gesturechange', (e) => e.preventDefault());
+
         window.addEventListener('load', initGame);
     </script>
 </body>
